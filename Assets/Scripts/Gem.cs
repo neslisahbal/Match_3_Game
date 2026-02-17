@@ -16,12 +16,16 @@ public class Gem : MonoBehaviour
 
     private Gem otherGem;
 
-    public enum GemType { blue, green, red, yellow, purple}
+    public enum GemType { blue, green, red, yellow, purple, bomb}
     public GemType type;
 
     public bool isMatched;
 
     private Vector2Int previousPos;
+
+    public GameObject destroyEffect;
+
+    public int blastSize = 2;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -48,9 +52,16 @@ public class Gem : MonoBehaviour
         if (mousePressed && Input.GetMouseButtonUp(0))
         {
             mousePressed = false;
-            Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            finalTouchPosition = new Vector2Int(Mathf.RoundToInt(mousePos.x), Mathf.RoundToInt(mousePos.y));
-            CalculateAngle();
+
+            if(board.currentState == Board.BoardState.move && board.roundMan.roundTime > 0)
+            {
+                Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                finalTouchPosition = new Vector2Int(Mathf.RoundToInt(mousePos.x), Mathf.RoundToInt(mousePos.y));
+                CalculateAngle();
+
+            }
+
+            
             
         }
         
@@ -58,9 +69,15 @@ public class Gem : MonoBehaviour
 
     private void OnMouseDown()
     {
-        Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        firstTouchPosition = new Vector2Int(Mathf.RoundToInt(mousePos.x), Mathf.RoundToInt(mousePos.y));
-        mousePressed = true;
+        if(board.currentState == Board.BoardState.move && board.roundMan.roundTime > 0)
+        {
+            Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            firstTouchPosition = new Vector2Int(Mathf.RoundToInt(mousePos.x), Mathf.RoundToInt(mousePos.y));
+            mousePressed = true;
+
+        }
+
+        
         
     }
 
@@ -123,6 +140,9 @@ public class Gem : MonoBehaviour
 
     public IEnumerator CheckMoveCo()
     {
+        board.currentState = Board.BoardState.wait;
+
+
         yield return new WaitForSeconds(.75f);
         board.matchFind.FindAllMatches();
 
@@ -134,6 +154,12 @@ public class Gem : MonoBehaviour
             board.allGems[posIndex.x, posIndex.y] = this;
             board.allGems[otherGem.posIndex.x, otherGem.posIndex.y] = otherGem;
 
+            yield return new WaitForSeconds(.5f);
+            board.currentState = Board.BoardState.move;
+
+        }
+        else{
+            board.DestroyMatches();
         }
 
     }

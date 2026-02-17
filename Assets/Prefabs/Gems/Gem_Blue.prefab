@@ -107,6 +107,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Gem
   posIndex: {x: 0, y: 0}
   board: {fileID: 0}
+  type: 0
+  isMatched: 0
+  destroyEffect: {fileID: 710402484802069160, guid: cd83e12fac2544d0d944d3ca616e5b88, type: 3}
 --- !u!61 &3882364643635376507
 BoxCollider2D:
   m_ObjectHideFlags: 0
